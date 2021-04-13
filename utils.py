@@ -79,10 +79,10 @@ def merge(images, size):
 def inverse_transform(image, is_ouput=False):
 
     if is_ouput == True:
-        print image[0]
+        print(image[0])
     result = ((image + 1) * 127.5).astype(np.uint8)
     if is_ouput == True:
-        print result
+        print(result)
     return result
 
 log_interval = 1000
@@ -187,8 +187,8 @@ def read_image_list_for_Eyes(category):
     assert len(all_iden_info) == len(all_ref_info)
     assert len(test_all_iden_info) == len(test_all_ref_info)
 
-    print "train_data", len(all_iden_info)
-    print "test_data", len(test_all_iden_info)
+    print("train_data", len(all_iden_info))
+    print("test_data", len(test_all_iden_info))
 
     return all_iden_info, all_ref_info, test_all_iden_info, test_all_ref_info
 

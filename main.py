@@ -27,7 +27,7 @@ FLAGS = flags.FLAGS
 
 if __name__ == "__main__":
 
-    print FLAGS.OPER_FLAG
+    print(FLAGS.OPER_FLAG)
 
     root_log_dir = "./outpout/log/logs{}".format(FLAGS.OPER_FLAG)
     checkpoint_dir = "./outpout/model_gan{}/".format(FLAGS.OPER_NAME)
