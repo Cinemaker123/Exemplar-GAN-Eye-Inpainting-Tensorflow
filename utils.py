@@ -3,7 +3,11 @@ import errno
 import numpy as np
 import scipy
 import scipy.misc
+import imageio
+import cv2
 import json
+from PIL import Image
+import matplotlib.pyplot as plt
 
 def mkdir_p(path):
     try:
@@ -23,10 +27,14 @@ def transform(image, npx = 64 , is_crop=False, resize_w=64, is_test=False):
         cropped_image = center_crop(image , npx , resize_w=resize_w, is_test=is_test)
     else:
         cropped_image = image
-        cropped_image = scipy.misc.imresize(cropped_image ,
-                            [resize_w , resize_w])
+        #cropped_image = cv2.resize(cropped_image, (resize_w, resize_w))
+        cropped_image = np.array(Image.fromarray(cropped_image).resize([resize_w , resize_w]))
+        #cropped_image = np.array(Image.fromarray(cropped_image).resize([resize_w , resize_w]))
+    #cropped_image = cv2.normalize(cropped_image, None, -1, 1, cv2.NORM_MINMAX, cv2.CV_32F)
+    #return cropped_image
+    #return np.array(cropped_image).astype(np.float32)
     return np.array(cropped_image)/127.5 - 1
-
+    
 def center_crop(x, crop_h , crop_w=None, resize_w=64, is_test=False):
 
     if crop_w is None:
@@ -41,20 +49,30 @@ def center_crop(x, crop_h , crop_w=None, resize_w=64, is_test=False):
             x = np.fliplr(x)
     # return scipy.misc.imresize(x[j:j+crop_h, i:i+crop_w],
     #                            [resize_w, resize_w])
-    return scipy.misc.imresize(x[20:218 - 20, 0: 178], [resize_w, resize_w])
+    return cv2.resize(x[20:218 - 20, 0: 178], (resize_w, resize_w))
+    #return np.array(Image.fromarray((x[20:218 - 20, 0: 178] * 255).astype(np.uint8)).resize([resize_w, resize_w]))
+
+# self made
+def save_individual_image(image, image_path, is_ouput=False):
+    #return cv2.imwrite(image_path, inverse_transform(image, is_ouput))
+    return imageio.imsave(image_path, inverse_transform(image, is_ouput))
 
 def save_images(images, size, image_path, is_ouput=False):
     return imsave(inverse_transform(images, is_ouput), size, image_path)
 
 def imread(path, is_grayscale=False):
-
     if (is_grayscale):
-        return scipy.misc.imread(path, flatten=True).astype(np.float)
+        return imageio.imread(path)
+        #return plt.imread(path, flatten=True).astype(np.float)
     else:
-        return scipy.misc.imread(path).astype(np.float)
+        return imageio.imread(path)
+        #return plt.imread(path).astype(np.float)
 
 def imsave(images, size, path):
-    return scipy.misc.imsave(path, merge(images, size))
+    #return cv2.imwrite(path, merge(images, size))
+    merged_images = merge(images, size)
+    merged_images = cv2.normalize(merged_images, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+    return imageio.imsave(path, merged_images)
 
 def merge(images, size):
 
@@ -68,7 +86,7 @@ def merge(images, size):
 
     else:
         h, w = images.shape[1], images.shape[2]
-        img = np.zeros((h * size[0], w * size[1], 3))
+        img = np.zeros((int(h) * int(size[0]), int(w) * int(size[1]), 3))
         for idx, image in enumerate(images):
             i = idx % size[1]
             j = idx // size[1]
@@ -87,7 +105,7 @@ def inverse_transform(image, is_ouput=False):
 
 log_interval = 1000
 
-def read_image_list_for_Eyes(category):
+def read_image_list_for_Eyes(category, notTest=True):
 
     json_cat = category + "/data.json"
     with open(json_cat, 'r') as f:
@@ -103,7 +121,7 @@ def read_image_list_for_Eyes(category):
     #k: name of identity
     #v: details.
     for c, (k, v) in enumerate(data.items()):
-
+        #notTest = False
         identity_info = []
 
         is_close = False
@@ -119,70 +137,87 @@ def read_image_list_for_Eyes(category):
 
             if is_close or v[i]['opened'] is None or v[i]['opened'] < 0.60:
                 is_close = True
-            if v[i]['opened'] < 0.60:
+
+            if v[i]['opened'] is None or v[i]['opened'] < 0.60:
                 is_close_id = i
 
-            str_info = str(v[i]['filename']) + "_"
+            str_info = str(v[i]['filename']) + ","
 
             if 'eye_left' in v[i] and v[i]['eye_left'] != None:
-                str_info += str(v[i]['eye_left']['y']) + "_"
-                str_info += str(v[i]['eye_left']['x']) + "_"
+                str_info += str(v[i]['eye_left']['y']) + ","
+                str_info += str(v[i]['eye_left']['x']) + ","
             else:
-                str_info += str(0) + "_"
-                str_info += str(0) + "_"
+                str_info += str(0) + ","
+                str_info += str(0) + ","
 
             if 'box_left' in v[i] and v[i]['box_left'] != None:
-                str_info += str(v[i]['box_left']['h']) + "_"
-                str_info += str(v[i]['box_left']['w']) + "_"
+                str_info += str(v[i]['box_left']['h']) + ","
+                str_info += str(v[i]['box_left']['w']) + ","
             else:
-                str_info += str(0) + "_"
-                str_info += str(0) + "_"
+                str_info += str(0) + ","
+                str_info += str(0) + ","
 
             if 'eye_right' in v[i] and v[i]['eye_right'] != None:
-                str_info += str(v[i]['eye_right']['y']) + "_"
-                str_info += str(v[i]['eye_right']['x']) + "_"
+                str_info += str(v[i]['eye_right']['y']) + ","
+                str_info += str(v[i]['eye_right']['x']) + ","
             else:
-                str_info += str(0) + "_"
-                str_info += str(0) + "_"
+                str_info += str(0) + ","
+                str_info += str(0) + ","
 
             if 'box_right' in v[i] and v[i]['box_right'] != None:
-                str_info += str(v[i]['box_right']['h']) + "_"
+                str_info += str(v[i]['box_right']['h']) + ","
                 str_info += str(v[i]['box_right']['w'])
             else:
-                str_info += str(0) + "_"
+                str_info += str(0) + ","
                 str_info += str(0)
 
             identity_info.append(str_info)
+        if notTest:
+            if is_close == False:
+                for j in range(len(v)):
 
-        if is_close == False:
+                    first_n = np.random.randint(0, len(v), size=1)[0]
+                    all_iden_info.append(identity_info[first_n])
+                    middle_value = identity_info[first_n]
+                    identity_info.remove(middle_value)
 
-            for j in range(len(v)):
+                    second_n = np.random.randint(0, len(v) - 1, size=1)[0]
+                    all_ref_info.append(identity_info[second_n])
 
-                first_n = np.random.randint(0, len(v), size=1)[0]
-                all_iden_info.append(identity_info[first_n])
-                middle_value = identity_info[first_n]
+                    identity_info.append(middle_value)
+
+            else:
+                #append twice with different reference result.
+
+                middle_value = identity_info[is_close_id]
+                test_all_iden_info.append(middle_value)
                 identity_info.remove(middle_value)
 
                 second_n = np.random.randint(0, len(v) - 1, size=1)[0]
-                all_ref_info.append(identity_info[second_n])
+                test_all_ref_info.append(identity_info[second_n])
 
-                identity_info.append(middle_value)
+                test_all_iden_info.append(middle_value)
 
+                second_n = np.random.randint(0, len(v) - 1, size=1)[0]
+                test_all_ref_info.append(identity_info[second_n])
         else:
+            # i think this adds the image v times with all other images of the same person
+            # it creates the binomial coefficient of the number of images
+            # 3 images => 6 combinations
+            #for j in range(len(v)):
+            #    for i in range(len(v)):
+            #        if i == j:
+            #            continue
+            #        test_all_iden_info.append(identity_info[i])
+            #        test_all_ref_info.append(identity_info[j])
+            # this should append each image with one random other exemplar image
+            for j in range(len(v)):
+                i = j
+                while i == j and len(v)>1:
+                    i = np.random.randint(0, len(v))
 
-            #append twice with different reference result.
-
-            middle_value = identity_info[is_close_id]
-            test_all_iden_info.append(middle_value)
-            identity_info.remove(middle_value)
-
-            second_n = np.random.randint(0, len(v) - 1, size=1)[0]
-            test_all_ref_info.append(identity_info[second_n])
-
-            test_all_iden_info.append(middle_value)
-
-            second_n = np.random.randint(0, len(v) - 1, size=1)[0]
-            test_all_ref_info.append(identity_info[second_n])
+                test_all_iden_info.append(identity_info[i])
+                test_all_ref_info.append(identity_info[j])
 
     assert len(all_iden_info) == len(all_ref_info)
     assert len(test_all_iden_info) == len(test_all_ref_info)
@@ -194,7 +229,7 @@ def read_image_list_for_Eyes(category):
 
 class Eyes(object):
 
-    def __init__(self, image_path):
+    def __init__(self, image_path, notTest=True):
         self.dataname = "Eyes"
         self.image_size = 256
         self.channel = 3
@@ -202,11 +237,12 @@ class Eyes(object):
         self.dims = self.image_size*self.image_size
         self.shape = [self.image_size, self.image_size, self.channel]
         self.train_images_name, self.train_eye_pos_name, self.train_ref_images_name, self.train_ref_pos_name, \
-            self.test_images_name, self.test_eye_pos_name, self.test_ref_images_name, self.test_ref_pos_name = self.load_Eyes(image_path)
+            self.test_images_name, self.test_eye_pos_name, self.test_ref_images_name, self.test_ref_pos_name = self.load_Eyes(image_path, notTest)
 
-    def load_Eyes(self, image_path):
 
-        images_list, images_ref_list, test_images_list, test_images_ref_list = read_image_list_for_Eyes(image_path)
+    def load_Eyes(self, image_path, notTest):
+
+        images_list, images_ref_list, test_images_list, test_images_ref_list = read_image_list_for_Eyes(image_path, notTest)
 
         train_images_name = []
         train_eye_pos_name = []
@@ -223,7 +259,7 @@ class Eyes(object):
 
             eye_pos = []
             image_name, left_eye_x, left_eye_y, left_eye_h, left_eye_w, right_eye_x, right_eye_y,\
-                right_eye_h, right_eye_w = images_info_str.split('_', 9)
+                right_eye_h, right_eye_w = images_info_str.split(',', 9)
             eye_pos.append((int(left_eye_x), int(left_eye_y), int(left_eye_h), int(left_eye_w), int(right_eye_x),
                             int(right_eye_y), int(right_eye_h), int(right_eye_w)))
             image_name = os.path.join(self.image_path, image_name)
@@ -235,7 +271,7 @@ class Eyes(object):
 
             eye_pos = []
             image_name, left_eye_x, left_eye_y, left_eye_h, left_eye_w, right_eye_x, right_eye_y, \
-                right_eye_h, right_eye_w = images_info_str.split('_', 9)
+                right_eye_h, right_eye_w = images_info_str.split(',', 9)
 
             eye_pos.append((int(left_eye_x), int(left_eye_y), int(left_eye_h), int(left_eye_w), int(right_eye_x),
                             int(right_eye_y), int(right_eye_h), int(right_eye_w)))
@@ -248,7 +284,7 @@ class Eyes(object):
 
             eye_pos = []
             image_name, left_eye_x, left_eye_y, left_eye_h, left_eye_w, right_eye_x, right_eye_y, \
-            right_eye_h, right_eye_w = images_info_str.split('_', 9)
+            right_eye_h, right_eye_w = images_info_str.split(',', 9)
             eye_pos.append(
                 (int(left_eye_x), int(left_eye_y), int(left_eye_h), int(left_eye_w), int(right_eye_x),
                  int(right_eye_y), int(right_eye_h), int(right_eye_w)))
@@ -261,7 +297,7 @@ class Eyes(object):
 
             eye_pos = []
             image_name, left_eye_x, left_eye_y, left_eye_h, left_eye_w, right_eye_x, right_eye_y, \
-            right_eye_h, right_eye_w = images_info_str.split('_', 9)
+            right_eye_h, right_eye_w = images_info_str.split(',', 9)
             eye_pos.append(
                 (int(left_eye_x), int(left_eye_y), int(left_eye_h), int(left_eye_w), int(right_eye_x),
                  int(right_eye_y), int(right_eye_h), int(right_eye_w)))
@@ -284,7 +320,9 @@ class Eyes(object):
 
     def getNextBatch(self, batch_num=0, batch_size=64, is_shuffle=True):
 
-        ro_num = len(self.train_images_name) / batch_size
+        ro_num = int(len(self.train_images_name) / batch_size)
+        if ro_num == 0:
+            ro_num = 1
         if batch_num % ro_num == 0 and is_shuffle:
 
             length = len(self.train_images_name)
@@ -329,7 +367,7 @@ class Eyes(object):
             self.test_ref_pos_name = np.array(self.test_ref_pos_name)
             self.test_ref_pos_name = self.test_ref_pos_name[perm]
 
-        return self.test_images_name[(batch_num % ro_num) * batch_size: (batch_num % ro_num + 1) * batch_size], \
-               self.test_eye_pos_name[(batch_num % ro_num) * batch_size: (batch_num % ro_num + 1) * batch_size], \
-               self.test_ref_images_name[(batch_num % ro_num) * batch_size: (batch_num % ro_num + 1) * batch_size], \
-               self.test_ref_pos_name[(batch_num % ro_num) * batch_size: (batch_num % ro_num + 1) * batch_size]
+        return self.test_images_name[int(batch_num % ro_num) * batch_size: int(batch_num % ro_num + 1) * batch_size], \
+               self.test_eye_pos_name[int(batch_num % ro_num) * batch_size: int(batch_num % ro_num + 1) * batch_size], \
+               self.test_ref_images_name[int(batch_num % ro_num) * batch_size: int(batch_num % ro_num + 1) * batch_size], \
+               self.test_ref_pos_name[int(batch_num % ro_num) * batch_size: int(batch_num % ro_num + 1) * batch_size]
