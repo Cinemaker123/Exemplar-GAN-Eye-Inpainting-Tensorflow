@@ -6,9 +6,9 @@ from ExemplarGAN import ExemplarGAN
 
 import os
 os.environ['CUDA_VISIBLE_DEVICES']= '0'
-tf.compat.v1.disable_eager_execution()
+#tf.compat.v1.disable_eager_execution()
 
-flags = tf.compat.v1.flags
+flags = tf.app.flags
 flags.DEFINE_integer("OPER_FLAG", 1, "flag of opertion, test or train")
 flags.DEFINE_string("OPER_NAME", "Experiment_6_21_6", "name of the experiment")
 flags.DEFINE_string("path", '?', "path of training data")
