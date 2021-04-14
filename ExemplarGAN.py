@@ -29,7 +29,7 @@ class ExemplarGAN(object):
         self.output_size = data_ob.image_size
         self.input_img = tf.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
         self.exemplar_images = tf.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
-        self.img_mask = tf..placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
+        self.img_mask = tf.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
         self.exemplar_mask =  tf.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
         self.domain_label = tf.placeholder(tf.int32, [batch_size])
         self.lr_decay = tf.placeholder(tf.float32, None, name='lr_decay')
@@ -294,7 +294,7 @@ class ExemplarGAN(object):
             r6 = Residual(r5, residual_name='re_6')
 
             g_deconv1 = tf.nn.relu(instance_norm(de_conv(r6, output_shape=[self.batch_size,
-                                                                           self.output_size/2, self.output_size/2, 128], name='gen_deconv1'), scope="gen_in"))
+                                                                           int(self.output_size/2), int(self.output_size/2), 128], name='gen_deconv1'), scope="gen_in"))
             # for 1
             g_deconv_1_1 = tf.nn.relu(instance_norm(de_conv(g_deconv1,
                         output_shape=[self.batch_size, self.output_size, self.output_size, 32], name='g_deconv_1_1'), scope='gen_in_1_1'))
