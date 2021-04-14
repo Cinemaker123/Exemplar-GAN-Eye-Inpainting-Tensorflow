@@ -49,7 +49,8 @@ def center_crop(x, crop_h , crop_w=None, resize_w=64, is_test=False):
             x = np.fliplr(x)
     # return scipy.misc.imresize(x[j:j+crop_h, i:i+crop_w],
     #                            [resize_w, resize_w])
-    return cv2.resize(x[20:218 - 20, 0: 178], (resize_w, resize_w))
+    return cv2.resize(x[j:j+crop_h, i:i+crop_w], (resize_w, resize_w))
+    #return cv2.resize(x[20:218 - 20, 0: 178], (resize_w, resize_w))
     #return np.array(Image.fromarray((x[20:218 - 20, 0: 178] * 255).astype(np.uint8)).resize([resize_w, resize_w]))
 
 # self made

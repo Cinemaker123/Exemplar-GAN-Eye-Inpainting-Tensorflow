@@ -27,12 +27,12 @@ class ExemplarGAN(object):
         self.beta2 = beta2
         self.n_critic = n_critic
         self.output_size = data_ob.image_size
-        self.input_img = tf.compat.v1.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
-        self.exemplar_images = tf.compat.v1.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
-        self.img_mask = tf.compat.v1.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
-        self.exemplar_mask =  tf.compat.v1.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
-        self.domain_label = tf.compat.v1.placeholder(tf.int32, [batch_size])
-        self.lr_decay = tf.compat.v1.placeholder(tf.float32, None, name='lr_decay')
+        self.input_img = tf.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
+        self.exemplar_images = tf.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
+        self.img_mask = tf..placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
+        self.exemplar_mask =  tf.placeholder(tf.float32, [batch_size, self.output_size, self.output_size, self.channel])
+        self.domain_label = tf.placeholder(tf.int32, [batch_size])
+        self.lr_decay = tf.placeholder(tf.float32, None, name='lr_decay')
 
     def build_model_GAN(self):
 
