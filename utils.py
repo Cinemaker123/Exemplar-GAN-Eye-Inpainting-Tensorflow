@@ -175,7 +175,7 @@ def read_image_list_for_Eyes(category, notTest=True):
             identity_info.append(str_info)
         if notTest:
             n = np.random.rand()
-            if n > 0.8:
+            if n > 0.2:
                 for j in range(len(v)):
 
                     first_n = np.random.randint(0, len(v), size=1)[0]

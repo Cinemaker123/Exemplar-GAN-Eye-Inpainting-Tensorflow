@@ -323,27 +323,27 @@ class ExemplarGAN(object):
                 if inverse:
                     mask[:] = 1.0
                 if not skip:
-                    scale = current_eye_pos[0] - 25 #current_eye_pos[3] / 2
-                    down_scale = current_eye_pos[0] + 25 #current_eye_pos[3] / 2
+                    scale = current_eye_pos[0] - 15 #current_eye_pos[3] / 2
+                    down_scale = current_eye_pos[0] + 15 #current_eye_pos[3] / 2
                     l1_1 =int(scale)
                     u1_1 =int(down_scale)
                     #x
-                    scale = current_eye_pos[1] - 35 #current_eye_pos[2] / 2
-                    down_scale = current_eye_pos[1] + 35 #current_eye_pos[2] / 2
+                    scale = current_eye_pos[1] - 25 #current_eye_pos[2] / 2
+                    down_scale = current_eye_pos[1] + 25 #current_eye_pos[2] / 2
                     l1_2 = int(scale)
                     u1_2 = int(down_scale)
 
                     mask[l1_1:u1_1, l1_2:u1_2, :] = 1.0
                     #right eye, y
-                    scale = current_eye_pos[4] - 25 #current_eye_pos[7] / 2
-                    down_scale = current_eye_pos[4] + 25 #current_eye_pos[7] / 2
+                    scale = current_eye_pos[4] - 15 #current_eye_pos[7] / 2
+                    down_scale = current_eye_pos[4] + 15 #current_eye_pos[7] / 2
 
                     l2_1 = int(scale)
                     u2_1 = int(down_scale)
 
                     #x
-                    scale = current_eye_pos[5] - 35 #current_eye_pos[6] / 2
-                    down_scale = current_eye_pos[5] + 35 #current_eye_pos[6] / 2
+                    scale = current_eye_pos[5] - 25 #current_eye_pos[6] / 2
+                    down_scale = current_eye_pos[5] + 25 #current_eye_pos[6] / 2
                     l2_2 = int(scale)
                     u2_2 = int(down_scale)
 
