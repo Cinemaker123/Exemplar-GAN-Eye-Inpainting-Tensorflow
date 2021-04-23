@@ -126,7 +126,7 @@ def read_image_list_for_Eyes(category, notTest=True):
         identity_info = []
 
         is_close = False
-        is_close_id = 0
+        is_close_id = None
 
         if c % log_interval == 0:
             print('Processed {}/{}'.format(c, len(data)))
@@ -187,8 +187,7 @@ def read_image_list_for_Eyes(category, notTest=True):
                     all_ref_info.append(identity_info[second_n])
 
                     identity_info.append(middle_value)
-
-            else:
+            if is_close_id is not None and n > 0.5:
                 #append twice with different reference result.
 
                 middle_value = identity_info[is_close_id]
@@ -202,7 +201,7 @@ def read_image_list_for_Eyes(category, notTest=True):
 
                 second_n = np.random.randint(0, len(v) - 1, size=1)[0]
                 test_all_ref_info.append(identity_info[second_n])
-        else:
+        #else:
             # i think this adds the image v times with all other images of the same person
             # it creates the binomial coefficient of the number of images
             # 3 images => 6 combinations
@@ -213,13 +212,13 @@ def read_image_list_for_Eyes(category, notTest=True):
             #        test_all_iden_info.append(identity_info[i])
             #        test_all_ref_info.append(identity_info[j])
             # this should append each image with one random other exemplar image
-            for j in range(len(v)):
-                i = j
-                while i == j and len(v)>1:
-                    i = np.random.randint(0, len(v))
+        #    for j in range(len(v)):
+        #        i = j
+        #        while i == j and len(v)>1:
+        #            i = np.random.randint(0, len(v))
 
-                test_all_iden_info.append(identity_info[i])
-                test_all_ref_info.append(identity_info[j])
+        #        test_all_iden_info.append(identity_info[i])
+        #           test_all_ref_info.append(identity_info[j])
 
     assert len(all_iden_info) == len(all_ref_info)
     assert len(test_all_iden_info) == len(test_all_ref_info)
