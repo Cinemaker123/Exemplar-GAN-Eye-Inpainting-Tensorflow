@@ -175,18 +175,6 @@ def read_image_list_for_Eyes(category, notTest=True):
             identity_info.append(str_info)
         if notTest:
             n = np.random.rand()
-            if n > 0.2:
-                for j in range(len(v)):
-
-                    first_n = np.random.randint(0, len(v), size=1)[0]
-                    all_iden_info.append(identity_info[first_n])
-                    middle_value = identity_info[first_n]
-                    identity_info.remove(middle_value)
-
-                    second_n = np.random.randint(0, len(v) - 1, size=1)[0]
-                    all_ref_info.append(identity_info[second_n])
-
-                    identity_info.append(middle_value)
             if is_close_id is not None and n > 0.5:
                 #append twice with different reference result.
 
@@ -201,6 +189,23 @@ def read_image_list_for_Eyes(category, notTest=True):
 
                 second_n = np.random.randint(0, len(v) - 1, size=1)[0]
                 test_all_ref_info.append(identity_info[second_n])
+            else:
+                if is_close_id is not None:
+                    middle_value = identity_info[is_close_id]
+                    identity_info.remove(middle_value)
+            
+            for j in range(len(v)-2):
+
+                first_n = np.random.randint(0, len(v)-1, size=1)[0]
+                all_iden_info.append(identity_info[first_n])
+                middle_value = identity_info[first_n]
+                identity_info.remove(middle_value)
+
+                second_n = np.random.randint(0, len(v) - 2, size=1)[0]
+                all_ref_info.append(identity_info[second_n])
+
+                identity_info.append(middle_value)
+            
         #else:
             # i think this adds the image v times with all other images of the same person
             # it creates the binomial coefficient of the number of images
