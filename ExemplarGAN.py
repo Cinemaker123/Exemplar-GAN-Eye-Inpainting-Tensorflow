@@ -231,10 +231,10 @@ class ExemplarGAN(object):
                     output_concat = np.concatenate([batch_images_array, batch_exem_array, incomplete_img, x_tilde, local_real, local_fake, image_with_local_fake], axis=0)
                     save_images(output_concat, [output_concat.shape[0]/self.batch_size, self.batch_size],
                                             '{}/{:02d}_output.jpg'.format(self.sample_path, step))
-                    for i in range(self.batch_size):
-                        shape = image_with_local_fake.shape
-                        individual_image = image_with_local_fake[i, :, :, :]
-                        save_individual_image(individual_image, "{}/{:02d}_{:02d}_output.jpg".format(self.sample_path, i, step))
+                    #for i in range(self.batch_size):
+                    #    shape = image_with_local_fake.shape
+                    #    individual_image = image_with_local_fake[i, :, :, :]
+                    #    save_individual_image(individual_image, "{}/{:02d}_{:02d}_output.jpg".format(self.sample_path, i, step))
                 if np.mod(step, 2000) == 0:
                     self.saver.save(sess, os.path.join(self.model_path, 'model_{:06d}.ckpt'.format(step)))
 
