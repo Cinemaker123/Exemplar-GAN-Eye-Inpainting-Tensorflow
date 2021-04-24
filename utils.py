@@ -175,7 +175,7 @@ def read_image_list_for_Eyes(category, notTest=True):
             identity_info.append(str_info)
         if notTest:
             n = np.random.rand()
-            if is_close_id is not None and n > 0.5:
+            if is_close_id is not None:
                 #append twice with different reference result.
 
                 middle_value = identity_info[is_close_id]
@@ -189,10 +189,6 @@ def read_image_list_for_Eyes(category, notTest=True):
 
                 second_n = np.random.randint(0, len(v) - 1, size=1)[0]
                 test_all_ref_info.append(identity_info[second_n])
-            else:
-                if is_close_id is not None:
-                    middle_value = identity_info[is_close_id]
-                    identity_info.remove(middle_value)
             
             for j in range(len(v)-2):
 
