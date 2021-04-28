@@ -106,7 +106,7 @@ def inverse_transform(image, is_ouput=False):
 
 log_interval = 1000
 
-def read_image_list_for_Eyes(category, notTest=True):
+def read_image_list_for_Eyes(category, train=True):
 
     json_cat = category + "/data.json"
     with open(json_cat, 'r') as f:
@@ -173,7 +173,7 @@ def read_image_list_for_Eyes(category, notTest=True):
                 str_info += str(0)
 
             identity_info.append(str_info)
-        if notTest:
+        if train:
             n = np.random.rand()
             if is_close_id is not None:
                 #append twice with different reference result.
@@ -202,24 +202,21 @@ def read_image_list_for_Eyes(category, notTest=True):
 
                 identity_info.append(middle_value)
             
-        #else:
-            # i think this adds the image v times with all other images of the same person
-            # it creates the binomial coefficient of the number of images
-            # 3 images => 6 combinations
+        else: # if test, then add all images into generator dataset
+            for j in range(len(v)):
+                for i in range(len(v)):
+                    if i == j:
+                        continue
+                    test_all_iden_info.append(identity_info[i])
+                    test_all_ref_info.append(identity_info[j])
+            #this should append each image with one random other exemplar image
             #for j in range(len(v)):
-            #    for i in range(len(v)):
-            #        if i == j:
-            #            continue
-            #        test_all_iden_info.append(identity_info[i])
-            #        test_all_ref_info.append(identity_info[j])
-            # this should append each image with one random other exemplar image
-        #    for j in range(len(v)):
-        #        i = j
-        #        while i == j and len(v)>1:
-        #            i = np.random.randint(0, len(v))
+            #    i = j
+            #    while i == j and len(v)>1:
+            #        i = np.random.randint(0, len(v))
 
-        #        test_all_iden_info.append(identity_info[i])
-        #           test_all_ref_info.append(identity_info[j])
+            #    test_all_iden_info.append(identity_info[i])
+            #    test_all_ref_info.append(identity_info[j])
 
     assert len(all_iden_info) == len(all_ref_info)
     assert len(test_all_iden_info) == len(test_all_ref_info)
@@ -231,7 +228,7 @@ def read_image_list_for_Eyes(category, notTest=True):
 
 class Eyes(object):
 
-    def __init__(self, image_path, notTest=True):
+    def __init__(self, image_path, train=True):
         self.dataname = "Eyes"
         self.image_size = 256
         self.channel = 3
@@ -239,12 +236,12 @@ class Eyes(object):
         self.dims = self.image_size*self.image_size
         self.shape = [self.image_size, self.image_size, self.channel]
         self.train_images_name, self.train_eye_pos_name, self.train_ref_images_name, self.train_ref_pos_name, \
-            self.test_images_name, self.test_eye_pos_name, self.test_ref_images_name, self.test_ref_pos_name = self.load_Eyes(image_path, notTest)
+            self.test_images_name, self.test_eye_pos_name, self.test_ref_images_name, self.test_ref_pos_name = self.load_Eyes(image_path, train)
 
 
-    def load_Eyes(self, image_path, notTest):
+    def load_Eyes(self, image_path, train):
 
-        images_list, images_ref_list, test_images_list, test_images_ref_list = read_image_list_for_Eyes(image_path, notTest)
+        images_list, images_ref_list, test_images_list, test_images_ref_list = read_image_list_for_Eyes(image_path, train)
 
         train_images_name = []
         train_eye_pos_name = []
