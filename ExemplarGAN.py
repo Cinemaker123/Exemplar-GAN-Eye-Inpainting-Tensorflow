@@ -165,7 +165,7 @@ class ExemplarGAN(object):
                 for i in range(self.batch_size):
                     individual_image = image_with_local_fake[i, :, :, :]
                     # Now the InPainted Images have the same filename as the original Images
-                    save_individual_image(individual_image, "{}/{}.jpg".format(self.sample_path, test_data_list[i].split("/")[-1].split(".")[0]))
+                    save_individual_image(individual_image, "{}/{}.png".format(self.sample_path, test_data_list[i].split("/")[-1].split(".")[0]))
 
     # do train
     def train(self, test_step=0):
