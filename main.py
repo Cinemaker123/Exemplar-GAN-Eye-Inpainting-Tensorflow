@@ -23,7 +23,7 @@ flags.DEFINE_integer("lam_gp", 10, "weight for gradient penalty")
 flags.DEFINE_float("beta1", 0.5, "beta1 of Adam optimizer")
 flags.DEFINE_float("beta2", 0.999, "beta2 of Adam optimizer")
 flags.DEFINE_integer("n_critic", 1, "iters of g for every d")
-flags.DEFINE_boolean("notTest", True, "if all images should be filed in test set")
+flags.DEFINE_boolean("train", True, "if all images should be filed in test set")
 flags.DEFINE_string("checkpoint_relative", "", "relative path to checkpoint_dir")
 flags.DEFINE_string("outpath", "", "alternative name to oper_name")
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     mkdir_p(checkpoint_dir)
     mkdir_p(sample_path)
 
-    m_ob = Eyes(FLAGS.path, FLAGS.notTest)
+    m_ob = Eyes(FLAGS.path, FLAGS.train)
 
     eGan = ExemplarGAN(batch_size= FLAGS.batch_size, max_iters= FLAGS.max_iters,
                       model_path= checkpoint_dir, data_ob= m_ob, sample_path= sample_path , log_dir= root_log_dir,
