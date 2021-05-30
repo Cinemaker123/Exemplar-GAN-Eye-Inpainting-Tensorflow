@@ -135,8 +135,8 @@ class ExemplarGAN(object):
 
                 x_tilde, incomplete_img, local_real, local_fake = sess.run(
                     [self.x_tilde, self.incomplete_img, self.local_real_img, self.local_fake_img],
-                    feed_dict={self.input_img: batch_images_array, self.exemplar_images: batch_exem_array, self.img_mask: self.get_Mask([batch_eye_pos]),
-                               self.exemplar_mask: self.get_Mask([test_eye_pos], 0, False)})
+                    feed_dict={self.input_img: batch_images_array, self.exemplar_images: batch_exem_array, self.img_mask: self.get_Mask(batch_eye_pos),
+                               self.exemplar_mask: self.get_Mask(test_eye_pos, 0, False)})
                 
                 
                 #sess.run([self.x_tilde, self.incomplete_img, self.local_real_img, self.local_fake_img], feed_dict=f_d)
